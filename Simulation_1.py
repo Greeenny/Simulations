@@ -22,7 +22,7 @@ def generate_colours():
 def update(surface,cells,cellsize=8):
     new_cells = np.zeros((cells.shape[0],cells.shape[1]))
     for row,col in np.ndindex(cells.shape):
-        num_alive = np.sum(cells[row-1:row + 2,col-1:col+2])
+        num_alive = np.sum(cells[row-1:row+2,col-1:col+2])
         is_alive = cells[row, col]
 
         #This is for debugging
