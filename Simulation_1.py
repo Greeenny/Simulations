@@ -17,9 +17,9 @@ def generate_colours():
 
     col_seed = (col_alive[0] + 50, col_alive[1] + 50, col_alive[2] + 50)
 
-    return col_alive, col_surrounded, col_seed
+    return [col_alive, col_surrounded, col_seed]
 
-def update(surface,cells,cellsize=8):
+def update(surface,cells,cellsize=8,colours = [col_alive,col_surrounded]):
     new_cells = np.zeros((cells.shape[0],cells.shape[1]))
     for row,col in np.ndindex(cells.shape):
         num_alive = np.sum(cells[row-1:row+2,col-1:col+2])
@@ -31,7 +31,7 @@ def update(surface,cells,cellsize=8):
         if is_alive == 0: #When dead
 
             if num_alive >= 4: #If surrounded by n alive cells, become alive
-                colour = col_alive
+                colour = colours[0]
                 new_cells[row, col] = 1
 
             else: #Else, if surrounded by less than n, stay dead
@@ -44,16 +44,16 @@ def update(surface,cells,cellsize=8):
                 new_cells[row, col] = 0
 
             elif num_alive > 8: #When surrounded by more than n cells, take on surrounded cell colouring for cool fx
-                colour = col_surrounded
+                colour = colours[1]
                 new_cells[row, col] = 1
             else: # else live
-                colour = col_alive
+                colour = colours[0]
                 new_cells[row, col] = 1
         pygame.draw.rect(surface,colour,rect=(col*8,row*8,8-1,8-1))
     return new_cells
 
 
-def main():
+def main(colours):
     pygame.init()
     display_x,display_y = 120,120
     #The display will be composed of 8x8 pixel blocks. So we have a 120x90 grid of 8x8 squares.
@@ -90,11 +90,17 @@ def main():
             surface.fill((30,30,60))
 
             #Updates the cells to be alive or dead
-            cells = update(surface,cells)
+            cells = update(surface,cells,colours=colours)
+            test = np.sum(cells)
+            if test > (117*117):
+                print("full",test)
+                return True
             pygame.display.update()
             count += 1
         elif state == pause:
             continue
 
-
-main()
+turned_on = True
+while turned_on:
+    colours = generate_colours()
+    turned_on = main(colours)
